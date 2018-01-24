@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LogTransApp</title>
+    <!-- Bootstrap -->
+    <style>
+        #btnSubmit {
+            margin-left: 1em;
+        }
+    </style>
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <link href="~/Content/sweetalert/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    @RenderSection("cssAdicional", required: false)
+</head>
+<body>
+    <input id="urlBase" type="hidden" value="@string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"))" />
+    <div class="container">
+        @RenderBody()
+    </div>
+   
+  
+    <script>
+        init();
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,412 @@
+﻿@model IEnumerable<WebSite_ClientesManager.Models.CLIENTES>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+
+<link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/jquery-ui.structure.min.css" rel="stylesheet" />
+<link href="~/Content/jquery-ui.theme.min.css" rel="stylesheet" />
+
+<div class="form-horizontal">
+    <h4>Consulta de Clientes</h4>
+    <hr />
+    <div class="row">
+        <div class="form-group">
+            <div class="col-lg-offset-10 col-lg-2">
+                @*aqui se llama al metodo que invoca el procedimiento almacenado*@
+                <a class="btn btn-success btn-xs btnAlta">
+                    Nuevo cliente
+                    <span class="glyphicon glyphicon-plus"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <div class="col-lg-3"> Buscar por Nombre Completo:</div>
+            <div class="col-lg-4"><input type="text" id="search" placeholder="Nombre"><input type="button" id="Btn_Buscar" value="Buscar" class="btn btn-default Btn_Buscar" style="margin-left:10px" /></div>
+        </div>
+    </div>
+
+    <table id="Tabla" class=" table">
+        <tr>
+            <th>
+                @Html.DisplayName("Sel.")
+            </th>
+            <th>
+                @Html.DisplayName("ID")
+            </th>
+            <th>
+                @Html.DisplayName("Identificador")
+            </th>
+            <th>
+                @Html.DisplayName("Nombre Completo")
+            </th>
+            <th>
+                @Html.DisplayName("Telefono")
+            </th>
+            <th>
+                @Html.DisplayName("Acción")
+            </th>
+            <th></th>
+        </tr>
+        <tfoot id="table_body">
+            @foreach (var item in Model)
+            {
+                <tr >
+                    <td>
+                        <div class="btn-group">
+                            <a class="Register_Edit" data-id="@item.ID" id="Register_Edit" name="Register_Edit">Sel.</a>
+                        </div>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IDENTIFICACION)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NOMBRE_COMPLETO)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TELEFONO)
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="Register_Delete" data-id="@item.ID" id="Register_Delete" name="Register_Delete">Eliminar</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tfoot>
+        </table>
+
+        <div id="myModal" class="modal fade" role="dialog" tabindex="-1" aria-labelledby="myLargeModalLabel">
+            <div class="modal-dialog modal-md">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div id="modal-content">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <link href="~/Content/sweetalert/sweetalert2.min.css" rel="stylesheet" />
+        <script src="~/Scripts/sweetalert2.all.min.js"></script>
+
+        @section Scripts{
+            <script>
+
+                //Funcion para mostrar el modal
+                $(".btnAlta").click(function (eve) {
+                    //LLamo al modal y cargo la vista get del create en su interior
+                    $("#modal-content").load("@Url.Action("Create", "Clientes")");
+                    $("#myModal").modal('show');
+                })
+
+
+                //Funcion para crear por ajax
+                $(document).ready(function () {
+                    $('body').on('click', '.btnAltaAcept', function () {
+                        //Si se pulsa el btn paso el evento hacia el boton y hago valido los datos
+                        //Borro todos los errores
+                        $('span[id^="genericError"]').remove();
+
+                        //Aqui creo la variable de control de subida
+                        var result = true;
+
+                        //Valido que el nombre no este vacio
+                        if (($("#NOMBRE_COMPLETO").val() == "")) {
+                            $("#Div_NOMBRE_COMPLETO").append('<span id="genericError" class="field-validation-error text-danger" data-valmsg-for="Usuario" data-valmsg-replace="true">Este campo es obligatorio</span>');
+                            result = false;
+                        }
+
+                        //Valido que el Identificado sea un numero  o no este vacio
+                        if (($("#IDENTIFICACION").val() == "" || (!/^([0-9])*$/.test($('#IDENTIFICACION').val())))) {
+                            $("#Div_IDENTIFICACION").append('<span id="genericError" class="field-validation-error text-danger" data-valmsg-for="Usuario" data-valmsg-replace="true">Este valor no puede estar vacio y tiene que ser un número</span>');
+                            result = false;
+                        }
+
+                        //Valido que el TELEFONO sea un numero  o no este vacio
+                        if (($("#TELEFONO").val() == "" || (!/^([0-9])*$/.test($('#TELEFONO').val())))) {
+                            $("#Div_TELEFONO").append('<span id="genericError" class="field-validation-error text-danger" data-valmsg-for="Usuario" data-valmsg-replace="true">Este valor no puede estar vacio y tiene que ser un número</span>');
+                            result = false;
+                        }
+
+                        //Revizo que el identificador no exista
+                        if (result == true) {
+                            $.ajax({
+                                type: 'POST',
+                                url: '@Url.Action("Check_Iden_ByAjax", "Clientes")',
+                                //Parametros de entrada que deben venir en el formato correcto
+                                data: {
+                                    Iden: $("#IDENTIFICACION").val()
+                                },
+                                success: function (data) {
+                                    if (data != "0") {
+                                        $("#Div_IDENTIFICACION").append('<span id="genericError" class="field-validation-error text-danger" data-valmsg-for="Usuario" data-valmsg-replace="true">Ya existe un registro con este valor debe seleccionar otro</span>');
+                                    }
+                                    else {
+                                        //Si todo esta bien subo si no espero
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: '@Url.Action("CreateByAjax", "Clientes")',
+                                            //Parametros de entrada que deben venir en el formato correcto
+                                            data: {
+                                                Nombre: $("#NOMBRE_COMPLETO").val(),
+                                                Iden: $("#IDENTIFICACION").val(),
+                                                Tel: $("#TELEFONO").val()
+                                            },
+                                            success: function (data) {
+                                                //En caso de recivir una respuesta afirmativa
+                                                //Quito todo lo del modal la cortina oscura y el modal
+                                                $(".modal-backdrop").remove();
+                                                $("#myModal").hide();
+                                                //Miro la respuesta si es correcta
+                                                if (data == "proceso correcto") {
+                                                    //Muesto un msg utilizando Sweet
+                                                    swal({
+                                                        title: data,
+                                                        text: "Cliente insertado satisfactoriamente",
+                                                        type: "success",
+                                                        confirmButtonClass: 'btn-success',
+                                                        confirmButtonText: 'Aceptar',
+                                                        allowOutsideClick: false,
+                                                        closeOnConfirm: true,
+                                                    }).then(
+                                                  function () {
+                                                      //Al pulsar aceptar redirecciono al listado
+                                                      location.href = '@Url.Action("Index", "Clientes")'
+
+                                                  });
+                                                }
+                                                else {
+                                                    //De no ser la correcta la respuesta del procedimiento es que no se inserto y muestro el mensaje de error
+                                                    swal({
+                                                        title: data,
+                                                        text: "No se pudo insertar el cliente",
+                                                        type: "error",
+                                                        confirmButtonClass: 'btn-success',
+                                                        confirmButtonText: 'Aceptar',
+                                                        allowOutsideClick: false,
+                                                        closeOnConfirm: true,
+                                                    }).then(
+                                                    function () {
+                                                        location.href = '@Url.Action("Index", "Clientes")'
+                                                    });
+                                                }
+                                            }
+                                        })
+                                    }
+                                }
+                            });
+                        }
+
+
+                    })
+
+                })
+
+
+                //Funcion para Editar por ajax
+                $(document).ready(function () {
+                    $('body').on('click', '.btnEditAcept', function () {
+                        //Si se pulsa el btn paso el evento hacia el boton y hago valido los datos
+                        //Borro todos los errores
+                        $('span[id^="genericError"]').remove();
+
+                        //Aqui creo la variable de control de subida
+                        var result = true;
+
+                        //Valido que el nombre no este vacio
+                        if (($("#NOMBRE_COMPLETO").val() == "")) {
+                            $("#Div_NOMBRE_COMPLETO").append('<span id="genericError" class="field-validation-error text-danger" data-valmsg-for="Usuario" data-valmsg-replace="true">Este campo es obligatorio</span>');
+                            result = false;
+                        }
+                        //Valido que el TELEFONO sea un numero  o no este vacio
+                        if (($("#TELEFONO").val() == "" || (!/^([0-9])*$/.test($('#TELEFONO').val())))) {
+                            $("#Div_TELEFONO").append('<span id="genericError" class="field-validation-error text-danger" data-valmsg-for="Usuario" data-valmsg-replace="true">Este valor no puede estar vacio y tiene que ser un número</span>');
+                            result = false;
+                        }
+                        //Si todo esta bien subo si no espero
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("EditByAjax", "Clientes")',
+                            //Parametros de entrada que deben venir en el formato correcto
+                            data: {
+                                Nombre: $("#NOMBRE_COMPLETO").val(),
+                                Iden: $("#IDENTIFICACION").val(),
+                                Id: $("#ID").val(),
+                                Tel: $("#TELEFONO").val()
+                            },
+                            success: function (data) {
+                                //En caso de recivir una respuesta afirmativa
+                                //Quito todo lo del modal la cortina oscura y el modal
+                                $(".modal-backdrop").remove();
+                                $("#myModal").hide();
+                                //Miro la respuesta si es correcta
+                                if (data == "proceso correcto") {
+                                    //Muesto un msg utilizando Sweet
+                                    swal({
+                                        title: data,
+                                        text: "Cliente modificado satisfactoriamente",
+                                        type: "success",
+                                        confirmButtonClass: 'btn-success',
+                                        confirmButtonText: 'Aceptar',
+                                        allowOutsideClick: false,
+                                        closeOnConfirm: true,
+                                    }).then(
+                                  function () {
+                                      //Al pulsar aceptar redirecciono al listado
+                                      location.href = '@Url.Action("Index", "Clientes")'
+
+                                  });
+                                }
+                                else {
+                                    //De no ser la correcta la respuesta del procedimiento es que no se inserto y muestro el mensaje de error
+                                    swal({
+                                        title: data,
+                                        text: "No se pudo insertar el cliente",
+                                        type: "error",
+                                        confirmButtonClass: 'btn-success',
+                                        confirmButtonText: 'Aceptar',
+                                        allowOutsideClick: false,
+                                        closeOnConfirm: true,
+                                    }).then(
+                                    function () {
+                                        location.href = '@Url.Action("Index", "Clientes")'
+                                    });
+                                }
+                            }
+                        })
+                    });
+                })
+
+
+
+
+                //Funcion para edit por ajax
+                $(document).ready(function () {
+                    $('body').on('click', '#Register_Edit', function () {
+                        //LLamo al modal y cargo la vista get del editar en su interior
+                        $("#modal-content").load("@Url.Action("Edit", "Clientes")" + "/" + $(this).data("id"));
+                        $("#myModal").modal('show');
+                        $("#myModal").show();
+                    })
+                })
+
+                //Funcion para borrar por ajax
+                $(document).ready(function () {
+                    $('body').on('click', '.Register_Delete', function () {
+                        //Guardo el Id para pasarlo mas adelante en caso de que se elimine
+                        var Id_Registro = $(this).data("id");
+                        //LLamo al msg para pedir confirmacion
+                        swal({
+                            title: "Importante",
+                            text: "¿Está seguro que desea eliminar el cliente?",
+                            type: "warning",
+                            confirmButtonClass: 'btn-success',
+                            confirmButtonText: 'Si',
+                            allowOutsideClick: true,
+                            closeOnConfirm: true,
+                        }).then(
+                                  function () {
+                                      //Al pulsar aceptar borro
+                                      $.ajax({
+                                          type: 'POST',
+                                          url: '@Url.Action("DeleteByAjax", "Clientes")',
+                                          //Parametros de entrada que deben venir en el formato correcto
+                                          data: {
+                                              Nombre: $("#NOMBRE_COMPLETO").val(),
+                                              Iden: $("#IDENTIFICACION").val(),
+                                              Id: Id_Registro,
+                                              Tel: $("#TELEFONO").val()
+                                          },
+                                          success: function (data) {
+                                              //En caso de recivir una respuesta afirmativa
+                                              //Quito todo lo del modal la cortina oscura y el modal
+                                              $(".modal-backdrop").remove();
+                                              $("#myModal").hide();
+                                              //Miro la respuesta si es correcta
+                                              if (data == "proceso correcto") {
+                                                  //Muesto un msg utilizando Sweet
+                                                  swal({
+                                                      title: data,
+                                                      text: "Cliente borrado satisfactoriamente",
+                                                      type: "success",
+                                                      confirmButtonClass: 'btn-success',
+                                                      confirmButtonText: 'Aceptar',
+                                                      allowOutsideClick: false,
+                                                      closeOnConfirm: true,
+                                                  }).then(
+                                                function () {
+                                                    //Al pulsar aceptar redirecciono al listado
+                                                    location.href = '@Url.Action("Index", "Clientes")'
+
+                                                });
+                                              }
+                                              else {
+                                                  swal({
+                                                      title: data,
+                                                      text: "Ocurrio un error y no se pudo borrar el cliente",
+                                                      type: "error",
+                                                      confirmButtonClass: 'btn-success',
+                                                      confirmButtonText: 'Aceptar',
+                                                      allowOutsideClick: false,
+                                                      closeOnConfirm: true,
+                                                  })
+                                              }
+                                          }
+                                      }
+                                  )
+                                  });
+                    })
+                })
+
+
+
+                //Funcion para borrar por ajax
+                $(document).ready(function () {
+                    $('body').on('click', '.Btn_Buscar', function () {
+                        //Aki vacio la tabla para llenarla con el resultado de las busqueda
+                        $("#table_body").remove();
+                        $("#Tabla").append('<tfoot id="table_body"> </tfoot>');
+                        
+
+                        //Pido la lista resultado
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("FindByAjax", "Clientes")',
+                            data: {
+                                Nombre: $("#search").val()
+                            },
+                            success: function (data) {
+                                //Aqui obtengo el resultado de la consulta
+                                var cliente = data.query;
+                                for (var i = 0; i < cliente.length; i++) {
+                                    //En cada pasada agrego un registro del resultado
+                                    $("#table_body").append('<tr><td><div class="btn-group"><a class="Register_Edit" data-id="' + cliente[i]["ID"] + '" id="Register_Edit" name="Register_Edit">Sel.</a></div><div></div></td><td>' + cliente[i]["ID"] + '</td><td>' + cliente[0]["IDENTIFICACION"] + '</td><td>' + cliente[i]["NOMBRE_COMPLETO"] + '</td><td>' + cliente[i]["TELEFONO"] + '</td><td><div class="btn-group"><a class="Register_Delete" data-id="' + cliente[i]["ID"] + '" id="Register_Delete" name="Register_Delete">Eliminar</a></div></td></tr>');
+                                }
+                            }
+                        });
+
+
+
+                    });
+                })
+
+
+
+
+
+            </script>
+        }

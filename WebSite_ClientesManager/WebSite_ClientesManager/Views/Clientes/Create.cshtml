@@ -1,0 +1,62 @@
+﻿
+
+
+@model WebSite_ClientesManager.Models.CLIENTES
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LayoutVacio.cshtml";
+}
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Mantenimiento de Clientes</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <div class="col-lg-offset-6 col-lg-6">
+                <div>
+                    <input type="reset" value="Cancelar" class="btn btn-default" />
+                    <input type="button" id="btnAltaAcept" value="Guardar" class="btn btn-default btnAltaAcept" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="control-label col-lg-2">
+                Identificación
+            </div>
+            <div id="Div_IDENTIFICACION" class="col-lg-10">
+                @Html.EditorFor(model => model.IDENTIFICACION, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.IDENTIFICACION, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="control-label col-lg-2">
+                Nombre Completo
+            </div>
+            <div id="Div_NOMBRE_COMPLETO" class="col-lg-10">
+                @Html.EditorFor(model => model.NOMBRE_COMPLETO, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NOMBRE_COMPLETO, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="control-label col-lg-2">
+                Teléfono
+            </div>
+            <div id="Div_TELEFONO" class="col-lg-10">
+                @Html.EditorFor(model => model.TELEFONO, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.TELEFONO, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+    </div>
+}
+
+<link href="~/Content/sweetalert/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>

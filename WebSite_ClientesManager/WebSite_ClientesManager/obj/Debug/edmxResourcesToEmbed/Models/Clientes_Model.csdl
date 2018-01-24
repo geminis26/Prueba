@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="bd_pruebaModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <ComplexType Name="FTN_CLIENTES_PRUEBA_LISTA_CLIENTES_Result">
+    <Property Name="ID" Type="Int64" Nullable="false" />
+    <Property Name="NOMBRE_COMPLETO" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="IDENTIFICACION" Type="Decimal" Precision="10" Scale="0" Nullable="false" />
+    <Property Name="TELEFONO" Type="Decimal" Precision="10" Scale="0" />
+  </ComplexType>
+  <EntityType Name="CLIENTES">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="NOMBRE_COMPLETO" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="IDENTIFICACION" Type="Int32" Nullable="false" />
+    <Property Name="TELEFONO" Type="Int32" />
+  </EntityType>
+  <EntityContainer Name="bd_pruebaEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="CLIENTES" EntityType="Self.CLIENTES" />
+    <FunctionImport Name="FTN_CLIENTES_PRUEBA_LISTA_CLIENTES" IsComposable="true" ReturnType="Collection(bd_pruebaModel.FTN_CLIENTES_PRUEBA_LISTA_CLIENTES_Result)">
+      <Parameter Name="P_BUSQUEDA" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="STPR_CLIENTES_PRUEBA_MANTENIMIENTO">
+      <Parameter Name="P_NombreCompleto" Mode="In" Type="String" />
+      <Parameter Name="P_Identificacion" Mode="In" Type="Decimal" />
+      <Parameter Name="P_Telefono" Mode="In" Type="Decimal" />
+      <Parameter Name="P_ID" Mode="In" Type="Int32" />
+      <Parameter Name="P_Accion" Mode="In" Type="String" />
+      <Parameter Name="P_Mensaje" Mode="InOut" Type="String" />
+    </FunctionImport>
+  </EntityContainer>
+</Schema>

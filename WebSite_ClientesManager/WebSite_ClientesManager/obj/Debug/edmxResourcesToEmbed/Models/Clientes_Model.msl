@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="bd_pruebaModelStoreContainer" CdmEntityContainer="bd_pruebaEntities">
+    <EntitySetMapping Name="CLIENTES">
+      <EntityTypeMapping TypeName="bd_pruebaModel.CLIENTES">
+        <MappingFragment StoreEntitySet="CLIENTES">
+          <ScalarProperty Name="ID" ColumnName="ID" />
+          <ScalarProperty Name="NOMBRE_COMPLETO" ColumnName="NOMBRE_COMPLETO" />
+          <ScalarProperty Name="IDENTIFICACION" ColumnName="IDENTIFICACION" />
+          <ScalarProperty Name="TELEFONO" ColumnName="TELEFONO" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionName="bd_pruebaModel.Store.FTN_CLIENTES_PRUEBA_LISTA_CLIENTES" FunctionImportName="FTN_CLIENTES_PRUEBA_LISTA_CLIENTES">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="bd_pruebaModel.FTN_CLIENTES_PRUEBA_LISTA_CLIENTES_Result">
+          <ScalarProperty Name="ID" ColumnName="ID" />
+          <ScalarProperty Name="NOMBRE_COMPLETO" ColumnName="NOMBRE_COMPLETO" />
+          <ScalarProperty Name="IDENTIFICACION" ColumnName="IDENTIFICACION" />
+          <ScalarProperty Name="TELEFONO" ColumnName="TELEFONO" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="STPR_CLIENTES_PRUEBA_MANTENIMIENTO" FunctionName="bd_pruebaModel.Store.STPR_CLIENTES_PRUEBA_MANTENIMIENTO" />
+  </EntityContainerMapping>
+</Mapping>

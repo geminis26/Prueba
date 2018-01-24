@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BD_pruebaModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="CLIENTES">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="NOMBRE_COMPLETO" Type="varchar" MaxLength="200" Nullable="false" />
+    <Property Name="IDENTIFICACION" Type="numeric" Precision="10" Scale="0" Nullable="false" />
+    <Property Name="TELEFONO" Type="numeric" Precision="10" Scale="0" />
+  </EntityType>
+  <Function Name="FTN_CLIENTES_PRUEBA_LISTA_CLIENTES" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="P_BUSQUEDA" Type="varchar" Mode="In" />
+    <ReturnType>
+      <CollectionType>
+        <RowType>
+          <Property Name="ID" Type="bigint" Nullable="false" />
+          <Property Name="NOMBRE_COMPLETO" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="IDENTIFICACION" Type="numeric" Precision="10" Scale="0" Nullable="false" />
+          <Property Name="TELEFONO" Type="numeric" Precision="10" Scale="0" />
+        </RowType>
+      </CollectionType>
+    </ReturnType>
+  </Function>
+  <Function Name="STPR_CLIENTES_PRUEBA_MANTENIMIENTO" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="P_NombreCompleto" Type="varchar" Mode="In" />
+    <Parameter Name="P_Identificacion" Type="numeric" Mode="In" />
+    <Parameter Name="P_Telefono" Type="numeric" Mode="In" />
+    <Parameter Name="P_ID" Type="int" Mode="In" />
+    <Parameter Name="P_Accion" Type="char" Mode="In" />
+  </Function>
+  <EntityContainer Name="BD_pruebaModelStoreContainer">
+    <EntitySet Name="CLIENTES" EntityType="Self.CLIENTES" Schema="dbo" store:Type="Tables" />
+  </EntityContainer>
+</Schema>
